@@ -4,7 +4,7 @@
 		"uuid": "b8362542-3338-11f1-8ec8-fab5e3d05da9",
 		"dig": {
 			"alg": "sha256",
-			"val": "98ddf8d1277f322a78d3c5668ecc01500239fcfb1a60bedcf34a1184df279949"
+			"val": "9182b9a20bdd3e049de2a48980e6b449358daeefeb1d3ef38fcf284ccbcd40a1"
 		}
 	},
 	"doc": {
@@ -27,7 +27,10 @@
 		"lines": [
 			{
 				"index": 1,
-				"key": "invoice-export",
+				"key": "other",
+				"ext": {
+					"es-verifactu-event-type": "08"
+				},
 				"complements": [
 					{
 						"$schema": "https://verifactu.gobl.org/v0/invoice-export",

@@ -4,7 +4,7 @@
 		"uuid": "b8362506-3338-11f1-8ec8-fab5e3d05da9",
 		"dig": {
 			"alg": "sha256",
-			"val": "80047679ea77080246cf17f8928fa87acb26580a205850d1bc1080d97f4dffc4"
+			"val": "16d626d5524fa5886d8fe0610412acb08af173ef00fca09e5a04183111f672ba"
 		}
 	},
 	"doc": {
@@ -27,8 +27,11 @@
 		"lines": [
 			{
 				"index": 1,
-				"key": "invoice-anomaly",
+				"key": "other",
 				"description": "Fingerprint mismatch in invoice record",
+				"ext": {
+					"es-verifactu-event-type": "04"
+				},
 				"complements": [
 					{
 						"$schema": "https://verifactu.gobl.org/v0/invoice-anomaly",

@@ -7,13 +7,13 @@ import (
 	"time"
 
 	"github.com/invopop/gobl"
-	noverifactu "github.com/invopop/gobl.es.verifactu/pkg/noverifactu"
-	"github.com/invopop/gobl/addons/es/verifactu"
+	"github.com/invopop/gobl.es.verifactu/addon"
 	"github.com/invopop/gobl/bill"
 	"github.com/invopop/gobl/cbc"
 	"github.com/invopop/gobl/head"
 	"github.com/invopop/gobl/l10n"
 	"github.com/invopop/gobl/org"
+	"github.com/invopop/gobl/rules"
 	"github.com/invopop/xmldsig"
 )
 
@@ -343,7 +343,13 @@ func (c *Client) RegisterEvent(env *gobl.Envelope, prev *EventChainData, opts ..
 		return nil, ErrNotSpanish
 	}
 
-	if err := noverifactu.Validate(status); err != nil {
+	// The status rules are registered against the addon, so they only apply
+	// when the document declares it. Check explicitly rather than converting a
+	// document that silently skipped validation.
+	if !addon.V1.In(status.GetAddons()...) {
+		return nil, ErrValidation.WithMessage("missing '" + addon.V1.String() + "' addon")
+	}
+	if err := rules.Validate(status); err != nil {
 		return nil, err
 	}
 
@@ -386,7 +392,7 @@ func (c *Client) addRegistrationStamps(env *gobl.Envelope, reg *InvoiceRegistrat
 	// now generate the QR codes and add them to the envelope
 	code := reg.generateURL(c.env == EnvironmentProduction)
 	env.Head.AddStamp(&head.Stamp{
-		Provider: verifactu.StampQR,
+		Provider: addon.StampQR,
 		Value:    code,
 	})
 	env.Head.AddStamp(&head.Stamp{

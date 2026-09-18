@@ -4,7 +4,7 @@
 		"uuid": "b836242a-3338-11f1-8ec8-fab5e3d05da9",
 		"dig": {
 			"alg": "sha256",
-			"val": "a9c3fbe903710242e6f716e65683a11df87c14345e96ca306633f422b33da6c9"
+			"val": "dfaa2d6f4dce46ba5b00a13bfaa67966191f7bd60607e0effcfb5f46fe1d0616"
 		}
 	},
 	"doc": {
@@ -27,7 +27,10 @@
 		"lines": [
 			{
 				"index": 1,
-				"key": "system-startup"
+				"key": "other",
+				"ext": {
+					"es-verifactu-event-type": "01"
+				}
 			}
 		]
 	}
