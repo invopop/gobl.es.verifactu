@@ -5,9 +5,8 @@ import (
 	"strconv"
 	"time"
 
-	noverifactu "github.com/invopop/gobl.es.verifactu/pkg/noverifactu"
+	"github.com/invopop/gobl.es.verifactu/addon"
 	"github.com/invopop/gobl/bill"
-	"github.com/invopop/gobl/cbc"
 	"github.com/invopop/gobl/org"
 	"github.com/invopop/xmldsig"
 	"github.com/nbio/xml"
@@ -17,21 +16,6 @@ import (
 const (
 	SF = "https://www2.agenciatributaria.gob.es/static_files/common/internet/dep/aplicaciones/es/aeat/tike/cont/ws/EventosSIF.xsd"
 )
-
-// EventTypeCodes maps status line keys to VeriFactu event type codes.
-var EventTypeCodes = map[cbc.Key]string{
-	noverifactu.KeySystemStartup:        "01",
-	noverifactu.KeySystemShutdown:       "02",
-	noverifactu.KeyInvoiceAnomalyLaunch: "03",
-	noverifactu.KeyInvoiceAnomaly:       "04",
-	noverifactu.KeyEventAnomalyLaunch:   "05",
-	noverifactu.KeyEventAnomaly:         "06",
-	noverifactu.KeyBackupRestoration:    "07",
-	noverifactu.KeyInvoiceExport:        "08",
-	noverifactu.KeyEventExport:          "09",
-	noverifactu.KeyEventSummary:         "10",
-	noverifactu.KeyOther:                "90",
-}
 
 // EventRegistration represents the root element of a RegistroEvento document.
 type EventRegistration struct {
@@ -218,7 +202,7 @@ type EventInvoiceRecordWithFingerprint struct {
 // newEventRegistration builds a new VeriFactu event registration from bill.Status document.
 func newEventRegistration(status *bill.Status, ts time.Time, s *Software) (*EventRegistration, error) {
 	line := status.Lines[0]
-	eventType := EventTypeCodes[line.Key]
+	eventType := addon.EventType(line).String()
 
 	ed, err := newEventData(line)
 	if err != nil {
@@ -266,26 +250,26 @@ func newEventData(line *bill.StatusLine) (*EventData, error) {
 	}
 
 	switch c := line.Complements[0].Instance().(type) {
-	case *noverifactu.InvoiceAnomalyLaunch:
+	case *addon.InvoiceAnomalyLaunch:
 		return &EventData{InvoiceAnomalyDetectionLaunch: newInvoiceAnomalyDetectionLaunch(c)}, nil
-	case *noverifactu.InvoiceAnomaly:
+	case *addon.InvoiceAnomaly:
 		return &EventData{InvoiceAnomalyDetection: newInvoiceAnomalyDetection(c, line)}, nil
-	case *noverifactu.EventAnomalyLaunch:
+	case *addon.EventAnomalyLaunch:
 		return &EventData{EventAnomalyDetectionLaunch: newEventAnomalyDetectionLaunch(c)}, nil
-	case *noverifactu.EventAnomaly:
+	case *addon.EventAnomaly:
 		return &EventData{EventAnomalyDetection: newEventAnomalyDetection(c, line)}, nil
-	case *noverifactu.InvoiceExport:
+	case *addon.InvoiceExport:
 		return &EventData{InvoiceExportPeriod: newInvoiceExportPeriod(c)}, nil
-	case *noverifactu.EventExport:
+	case *addon.EventExport:
 		return &EventData{EventExportPeriod: newEventExportPeriod(c)}, nil
-	case *noverifactu.EventSummary:
+	case *addon.EventSummary:
 		return &EventData{EventSummary: newEventSummary(c)}, nil
 	default:
 		return nil, fmt.Errorf("complement %s not supported", line.Complements[0].Schema)
 	}
 }
 
-func newInvoiceAnomalyDetectionLaunch(c *noverifactu.InvoiceAnomalyLaunch) *InvoiceAnomalyDetectionLaunch {
+func newInvoiceAnomalyDetectionLaunch(c *addon.InvoiceAnomalyLaunch) *InvoiceAnomalyDetectionLaunch {
 	return &InvoiceAnomalyDetectionLaunch{
 		FingerprintCheck: checkStr(c.FingerprintCheck),
 		FingerprintCount: countStr(c.FingerprintCount),
@@ -298,7 +282,7 @@ func newInvoiceAnomalyDetectionLaunch(c *noverifactu.InvoiceAnomalyLaunch) *Invo
 	}
 }
 
-func newInvoiceAnomalyDetection(c *noverifactu.InvoiceAnomaly, line *bill.StatusLine) *InvoiceAnomalyDetection {
+func newInvoiceAnomalyDetection(c *addon.InvoiceAnomaly, line *bill.StatusLine) *InvoiceAnomalyDetection {
 	d := &InvoiceAnomalyDetection{
 		AnomalyType:      c.Type.String(),
 		OtherAnomalyData: line.Description,
@@ -313,7 +297,7 @@ func newInvoiceAnomalyDetection(c *noverifactu.InvoiceAnomaly, line *bill.Status
 	return d
 }
 
-func newEventAnomalyDetectionLaunch(c *noverifactu.EventAnomalyLaunch) *EventAnomalyDetectionLaunch {
+func newEventAnomalyDetectionLaunch(c *addon.EventAnomalyLaunch) *EventAnomalyDetectionLaunch {
 	return &EventAnomalyDetectionLaunch{
 		FingerprintCheck: checkStr(c.FingerprintCheck),
 		FingerprintCount: countStr(c.FingerprintCount),
@@ -326,7 +310,7 @@ func newEventAnomalyDetectionLaunch(c *noverifactu.EventAnomalyLaunch) *EventAno
 	}
 }
 
-func newEventAnomalyDetection(c *noverifactu.EventAnomaly, line *bill.StatusLine) *EventAnomalyDetection {
+func newEventAnomalyDetection(c *addon.EventAnomaly, line *bill.StatusLine) *EventAnomalyDetection {
 	d := &EventAnomalyDetection{
 		AnomalyType:      c.Type.String(),
 		OtherAnomalyData: line.Description,
@@ -341,7 +325,7 @@ func newEventAnomalyDetection(c *noverifactu.EventAnomaly, line *bill.StatusLine
 	return d
 }
 
-func newInvoiceExportPeriod(c *noverifactu.InvoiceExport) *InvoiceExportPeriod {
+func newInvoiceExportPeriod(c *addon.InvoiceExport) *InvoiceExportPeriod {
 	return &InvoiceExportPeriod{
 		PeriodStart:              c.Start,
 		PeriodEnd:                c.End,
@@ -355,7 +339,7 @@ func newInvoiceExportPeriod(c *noverifactu.InvoiceExport) *InvoiceExportPeriod {
 	}
 }
 
-func newEventExportPeriod(c *noverifactu.EventExport) *EventExportPeriod {
+func newEventExportPeriod(c *addon.EventExport) *EventExportPeriod {
 	return &EventExportPeriod{
 		PeriodStart:              c.Start,
 		PeriodEnd:                c.End,
@@ -366,7 +350,7 @@ func newEventExportPeriod(c *noverifactu.EventExport) *EventExportPeriod {
 	}
 }
 
-func newEventSummary(c *noverifactu.EventSummary) *EventSummary {
+func newEventSummary(c *addon.EventSummary) *EventSummary {
 	s := &EventSummary{
 		RegistrationRecordCount: countStr(&c.RegistrationCount),
 		TotalTaxSum:             c.TaxTotal,
@@ -387,7 +371,7 @@ func newEventSummary(c *noverifactu.EventSummary) *EventSummary {
 	return s
 }
 
-func newEventInvoiceRecordWithFingerprint(r *noverifactu.InvoiceRecord) *EventInvoiceRecordWithFingerprint {
+func newEventInvoiceRecordWithFingerprint(r *addon.InvoiceRecord) *EventInvoiceRecordWithFingerprint {
 	if r == nil {
 		return nil
 	}
@@ -399,7 +383,7 @@ func newEventInvoiceRecordWithFingerprint(r *noverifactu.InvoiceRecord) *EventIn
 	}
 }
 
-func newEventRecord(r *noverifactu.EventRecord) *EventRecord {
+func newEventRecord(r *addon.EventRecord) *EventRecord {
 	if r == nil {
 		return nil
 	}

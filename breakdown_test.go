@@ -7,7 +7,7 @@ import (
 	verifactu "github.com/invopop/gobl.es.verifactu"
 	"github.com/invopop/gobl.es.verifactu/test"
 
-	addon "github.com/invopop/gobl/addons/es/verifactu"
+	"github.com/invopop/gobl.es.verifactu/addon"
 	"github.com/invopop/gobl/bill"
 	"github.com/invopop/gobl/num"
 	"github.com/invopop/gobl/org"

@@ -1,6 +1,4 @@
-// Package noverifactu defines the GOBL complement types used in bill.Status
-// documents for NO VERI*FACTU event registration.
-package noverifactu
+package addon
 
 import (
 	"github.com/invopop/gobl/cal"

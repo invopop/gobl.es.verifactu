@@ -10,6 +10,8 @@ jobs:
   lint-test-build:
     name: Test
     runs-on: ubuntu-latest
+    env:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
     steps:
       - name: Check out code
@@ -27,4 +29,16 @@ jobs:
         run: go mod download
 
       - name: Test
-        run: go test -tags unit -race ./...
+        run: go test -tags unit -race -coverprofile=coverage.out -covermode=atomic ./...
+
+      - name: Coverage summary
+        run: go tool cover -func=coverage.out | tail -1 >> "$GITHUB_STEP_SUMMARY"
+
+      # Runs once the repo is enabled on Codecov and a CODECOV_TOKEN secret is
+      # added; skipped (keeping the build green) until then.
+      - name: Upload coverage reports to Codecov
+        if: env.CODECOV_TOKEN != ''
+        uses: codecov/codecov-action@v5.1.2
+        with:
+          token: ${{ env.CODECOV_TOKEN }}
+          slug: invopop/gobl.es.verifactu
