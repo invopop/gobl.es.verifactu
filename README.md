@@ -4,7 +4,7 @@ Go library to convert [GOBL](https://github.com/invopop/gobl) invoices into Veri
 
 Released under the Apache 2.0 [LICENSE](https://github.com/invopop/gobl/blob/main/LICENSE), Copyright 2021-2025 [Invopop S.L.](https://invopop.com).
 
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/invopop/gobl.verifactu)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/invopop/gobl.es.verifactu)
 
 ## Source
 
