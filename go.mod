@@ -1,4 +1,4 @@
-module github.com/invopop/gobl.verifactu
+module github.com/invopop/gobl.es.verifactu
 
 go 1.24.0
 

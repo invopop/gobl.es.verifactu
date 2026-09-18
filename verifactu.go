@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/invopop/gobl"
-	noverifactu "github.com/invopop/gobl.verifactu/pkg/noverifactu"
+	noverifactu "github.com/invopop/gobl.es.verifactu/pkg/noverifactu"
 	"github.com/invopop/gobl/addons/es/verifactu"
 	"github.com/invopop/gobl/bill"
 	"github.com/invopop/gobl/cbc"

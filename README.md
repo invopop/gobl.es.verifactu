@@ -34,7 +34,7 @@ import (
 	"os"
 
 	"github.com/invopop/gobl"
-	verifactu "github.com/invopop/gobl.verifactu"
+	verifactu "github.com/invopop/gobl.es.verifactu"
 	"github.com/invopop/xmldsig"
 )
 
@@ -124,7 +124,7 @@ func main() {
 The GOBL VeriFactu package tool also includes a command line helper. You can install manually in your Go environment with:
 
 ```bash
-go install github.com/invopop/gobl.verifactu
+go install github.com/invopop/gobl.es.verifactu/cmd/gobl.verifactu@latest
 ```
 
 We recommend using a `.env` file to prepare configuration settings, although all parameters can be set using command line flags. Heres an example:
