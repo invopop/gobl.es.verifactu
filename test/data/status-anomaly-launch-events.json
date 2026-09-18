@@ -4,7 +4,7 @@
 		"uuid": "b836251a-3338-11f1-8ec8-fab5e3d05da9",
 		"dig": {
 			"alg": "sha256",
-			"val": "45b9308d2f16e2056de4610f1034e7efb55cb50f83ba91a10e3a67019355b497"
+			"val": "b456376e54f5c310e28553dc26a500a27d71ced7009cf2ccc06ed556be51803b"
 		}
 	},
 	"doc": {
@@ -27,7 +27,10 @@
 		"lines": [
 			{
 				"index": 1,
-				"key": "event-anomaly-launch",
+				"key": "other",
+				"ext": {
+					"es-verifactu-event-type": "05"
+				},
 				"complements": [
 					{
 						"$schema": "https://verifactu.gobl.org/v0/event-anomaly-launch",

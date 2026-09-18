@@ -1,6 +1,6 @@
-module github.com/invopop/gobl.verifactu
+module github.com/invopop/gobl.es.verifactu
 
-go 1.24.0
+go 1.25.0
 
 // replace github.com/invopop/gobl => ../gobl
 
@@ -8,7 +8,7 @@ go 1.24.0
 
 require (
 	github.com/go-resty/resty/v2 v2.15.3
-	github.com/invopop/gobl v0.403.0
+	github.com/invopop/gobl v0.507.0
 	github.com/invopop/validation v0.8.0
 	github.com/invopop/xmldsig v0.14.0
 	github.com/joho/godotenv v1.5.1
@@ -40,8 +40,9 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/russellhaering/goxmldsig v1.6.0 // indirect
 	go.yaml.in/yaml/v4 v4.0.0-rc.2 // indirect
-	golang.org/x/crypto v0.47.0 // indirect
-	golang.org/x/net v0.48.0 // indirect
+	golang.org/x/crypto v0.53.0 // indirect
+	golang.org/x/net v0.56.0 // indirect
+	golang.org/x/text v0.38.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	software.sslmate.com/src/go-pkcs12 v0.7.0 // indirect
 )

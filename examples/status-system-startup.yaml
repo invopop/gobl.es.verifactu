@@ -1,0 +1,20 @@
+$schema: "https://gobl.org/draft-0/bill/status"
+$addons: ["es-verifactu-v1"]
+uuid: "5074297d-0a87-4a59-81b5-9ef45e4807eb"
+type: "system"
+issue_date: "2026-04-16"
+code: "EV-001"
+
+supplier:
+  name: "Invopop S.L."
+  tax_id:
+    country: "ES"
+    code: "B85905495"
+
+# NO VERI*FACTU events use the core `other` status line key and carry their
+# L2E event type in the `es-verifactu-event-type` extension. 01 is the
+# invoicing system startup event, which takes no complement.
+lines:
+  - key: "other"
+    ext:
+      es-verifactu-event-type: "01"

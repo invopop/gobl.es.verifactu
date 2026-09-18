@@ -4,9 +4,9 @@ import (
 	"testing"
 	"time"
 
-	verifactu "github.com/invopop/gobl.verifactu"
-	"github.com/invopop/gobl.verifactu/test"
-	addon "github.com/invopop/gobl/addons/es/verifactu"
+	verifactu "github.com/invopop/gobl.es.verifactu"
+	"github.com/invopop/gobl.es.verifactu/addon"
+	"github.com/invopop/gobl.es.verifactu/test"
 	"github.com/invopop/gobl/bill"
 	"github.com/invopop/gobl/cal"
 	"github.com/invopop/gobl/num"

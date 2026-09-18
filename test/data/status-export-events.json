@@ -4,7 +4,7 @@
 		"uuid": "b8362556-3338-11f1-8ec8-fab5e3d05da9",
 		"dig": {
 			"alg": "sha256",
-			"val": "861ab201714a84ebdbc62a14e8d2dee592fd1bb46008277926eb370f0b76a91e"
+			"val": "fbbef63db2c428fca4f339bf53a5555e4379b8e82b9aa340d17a77b9c3db465d"
 		}
 	},
 	"doc": {
@@ -27,7 +27,10 @@
 		"lines": [
 			{
 				"index": 1,
-				"key": "event-export",
+				"key": "other",
+				"ext": {
+					"es-verifactu-event-type": "09"
+				},
 				"complements": [
 					{
 						"$schema": "https://verifactu.gobl.org/v0/event-export",
