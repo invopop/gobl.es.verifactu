@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	verifactu "github.com/invopop/gobl.verifactu"
-	"github.com/invopop/gobl.verifactu/test"
+	verifactu "github.com/invopop/gobl.es.verifactu"
+	"github.com/invopop/gobl.es.verifactu/test"
 
 	"github.com/invopop/gobl/bill"
 	"github.com/invopop/xmldsig"
