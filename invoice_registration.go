@@ -141,8 +141,15 @@ func newInvoiceRegistration(inv *bill.Invoice, ts time.Time, s *Software) (*Invo
 		return nil, err
 	}
 
+	// In VeriFactu credit notes become "facturas rectificativas por diferencias",
+	// which require negative amounts. These are inverted here from the existing
+	// totals instead of inverting and recalculating the invoice, so that the
+	// source document is left untouched and invoices with the bypass tag
+	// are supported.
+	negate := inv.Type == bill.InvoiceTypeCreditNote
+
 	desc := newDescription(inv)
-	dg, err := newDesglose(inv)
+	dg, err := newDesglose(inv, negate)
 	if err != nil {
 		return nil, err
 	}
@@ -164,8 +171,8 @@ func newInvoiceRegistration(inv *bill.Invoice, ts time.Time, s *Software) (*Invo
 		TipoFactura:                    tf,
 		DescripcionOperacion:           desc,
 		Desglose:                       dg,
-		CuotaTotal:                     inv.Totals.Tax,
-		ImporteTotal:                   inv.Totals.TotalWithTax, // no retained taxes here
+		CuotaTotal:                     signed(inv.Totals.Tax, negate),
+		ImporteTotal:                   signed(inv.Totals.TotalWithTax, negate), // no retained taxes here
 		SistemaInformatico:             s,
 		FechaHoraHusoGenRegistro:       formatDateTimeZone(ts),
 		TipoHuella:                     FingerprintType,
@@ -184,7 +191,7 @@ func newInvoiceRegistration(inv *bill.Invoice, ts time.Time, s *Software) (*Invo
 	for _, charge := range inv.Charges {
 		if len(charge.Taxes) == 0 {
 			if !partialBreakdown || charge.Key == bill.ChargeKeyOutlay {
-				reg.ImporteTotal = reg.ImporteTotal.Sub(charge.Amount)
+				reg.ImporteTotal = reg.ImporteTotal.Sub(signed(charge.Amount, negate))
 			}
 		}
 	}
