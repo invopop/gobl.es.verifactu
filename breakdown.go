@@ -6,6 +6,7 @@ import (
 	"github.com/invopop/gobl.es.verifactu/addon"
 	"github.com/invopop/gobl/bill"
 	"github.com/invopop/gobl/cbc"
+	"github.com/invopop/gobl/num"
 	"github.com/invopop/gobl/regimes/es"
 	"github.com/invopop/gobl/tax"
 )
@@ -24,7 +25,9 @@ var taxCategoryCodeMap = map[cbc.Code]string{
 	es.TaxCategoryIGIC: taxCodeIGIC,
 }
 
-func newDesglose(inv *bill.Invoice) (*Desglose, error) {
+// newDesglose builds the tax breakdown from the invoice totals. When negate is
+// true, all amounts are inverted, as required for credit notes.
+func newDesglose(inv *bill.Invoice, negate bool) (*Desglose, error) {
 	if inv.Totals == nil || inv.Totals.Taxes == nil {
 		return nil, nil
 	}
@@ -35,7 +38,7 @@ func newDesglose(inv *bill.Invoice) (*Desglose, error) {
 			continue
 		}
 		for _, r := range c.Rates {
-			detalleDesglose, err := buildDetalleDesglose(c, r)
+			detalleDesglose, err := buildDetalleDesglose(c, r, negate)
 			if err != nil {
 				return nil, err
 			}
@@ -48,9 +51,9 @@ func newDesglose(inv *bill.Invoice) (*Desglose, error) {
 
 // Rules applied to build the breakdown come from:
 // https://www.agenciatributaria.es/static_files/AEAT_Desarrolladores/EEDD/IVA/VERI-FACTU/Validaciones_Errores_Veri-Factu.pdf
-func buildDetalleDesglose(c *tax.CategoryTotal, r *tax.RateTotal) (*DetalleDesglose, error) {
+func buildDetalleDesglose(c *tax.CategoryTotal, r *tax.RateTotal, negate bool) (*DetalleDesglose, error) {
 	detalle := &DetalleDesglose{
-		BaseImponibleOImporteNoSujeto: r.Base.String(),
+		BaseImponibleOImporteNoSujeto: signed(r.Base, negate).String(),
 	}
 
 	cat, ok := taxCategoryCodeMap[c.Code]
@@ -76,12 +79,12 @@ func buildDetalleDesglose(c *tax.CategoryTotal, r *tax.RateTotal) (*DetalleDesgl
 		case "S1", "S2":
 			// S1 represents taxed operations; S2 represents reverse-charge operations.
 			// For S2, the amount should be set (typically 0).
-			detalle.CuotaRepercutida = r.Amount.String()
+			detalle.CuotaRepercutida = signed(r.Amount, negate).String()
 		}
 	}
 
 	if detalle.Impuesto == taxCodeIPSI || detalle.Impuesto == taxCodeOther || detalle.ClaveRegimen == "06" {
-		detalle.BaseImponibleACoste = r.Base.String()
+		detalle.BaseImponibleACoste = signed(r.Base, negate).String()
 	}
 
 	switch detalle.CalificacionOperacion {
@@ -91,7 +94,7 @@ func buildDetalleDesglose(c *tax.CategoryTotal, r *tax.RateTotal) (*DetalleDesgl
 		// Surcharges can only happen for regular national transactions.
 		if r.Surcharge != nil {
 			detalle.TipoRecargoEquivalencia = r.Surcharge.Percent.StringWithoutSymbol()
-			detalle.CuotaRecargoEquivalencia = r.Surcharge.Amount.String()
+			detalle.CuotaRecargoEquivalencia = signed(r.Surcharge.Amount, negate).String()
 		}
 	case "S2":
 		// Implies reverse-charge with 0 rate
@@ -103,4 +106,12 @@ func buildDetalleDesglose(c *tax.CategoryTotal, r *tax.RateTotal) (*DetalleDesgl
 	}
 
 	return detalle, nil
+}
+
+// signed returns the amount inverted if negate is true.
+func signed(a num.Amount, negate bool) num.Amount {
+	if negate {
+		return a.Invert()
+	}
+	return a
 }

@@ -217,13 +217,6 @@ func (c *Client) RegisterInvoice(env *gobl.Envelope, prev *ChainData, opts ...Ge
 		return nil, ErrNotSpanish
 	}
 
-	if inv.Type == bill.InvoiceTypeCreditNote {
-		// In VeriFactu credit notes become "facturas rectificativas por diferencias",
-		// which require negative totals.
-		if err := inv.Invert(); err != nil {
-			return nil, err
-		}
-	}
 	software := c.software // clone
 	if o.installNumber != "" {
 		software.NumeroInstalacion = o.installNumber
