@@ -25,15 +25,16 @@ const (
 
 // Client provides the main interface to the VeriFactu package.
 type Client struct {
-	software Software
-	env      Environment
-	rep      *Issuer
-	curTime  time.Time
-	cert     *xmldsig.Certificate
-	conn     *connection
-	withSeal bool
-	signing  bool
-	signOpts []xmldsig.Option
+	software    Software
+	env         Environment
+	rep         *Issuer
+	curTime     time.Time
+	cert        *xmldsig.Certificate
+	conn        *connection
+	withSeal    bool
+	signing     bool
+	signOpts    []xmldsig.Option
+	noVerifactu bool
 }
 
 // Option is used to configure the client.
@@ -87,6 +88,16 @@ func InSandbox() Option {
 // individuals. In Spanish these are called "Sello de Entidad".
 var WithCorporateSeal Option = func(c *Client) {
 	c.withSeal = true
+}
+
+// NoVerifactu configures the client for a NO VERI*FACTU invoicing system. Records in NO
+// VERI*FACTU systems must be signed, so this option also enables signing; use WithSigning
+// to pass additional signing options if needed.
+func NoVerifactu() Option {
+	return func(c *Client) {
+		c.noVerifactu = true
+		c.signing = true
+	}
 }
 
 // WithSigning sets additional xmldsig options that will be passed
@@ -390,7 +401,7 @@ func (c *Client) addEventStamps(env *gobl.Envelope, reg *EventRegistration) {
 // addRegistrationStamps adds the QR code stamp and Hash to the envelope.
 func (c *Client) addRegistrationStamps(env *gobl.Envelope, reg *InvoiceRegistration) {
 	// now generate the QR codes and add them to the envelope
-	code := reg.generateURL(c.env == EnvironmentProduction)
+	code := reg.generateURL(c.env == EnvironmentProduction, c.noVerifactu)
 	env.Head.AddStamp(&head.Stamp{
 		Provider: addon.StampQR,
 		Value:    code,
