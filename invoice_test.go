@@ -120,6 +120,20 @@ func TestNewRegistroAlta(t *testing.T) {
 		assert.Equal(t, "1960.21", inv.Totals.Payable.String())
 	})
 
+	t.Run("should handle rectificative invoices with rounding", func(t *testing.T) {
+		env, inv := test.LoadInvoice("cred-note-base.json")
+		rounding := num.MakeAmount(-2, 2)
+		inv.Totals.Rounding = &rounding
+		require.NoError(t, env.Calculate())
+		require.Equal(t, "1960.18", inv.Totals.Payable.String())
+
+		ra, err := vc.RegisterInvoice(env, nil)
+		require.NoError(t, err)
+
+		assert.Equal(t, "-340.20", ra.CuotaTotal.String())
+		assert.Equal(t, "-1960.20", ra.ImporteTotal.String())
+	})
+
 	t.Run("should handle substitution invoices", func(t *testing.T) {
 		env, inv := test.LoadInvoice("inv-base.json")
 		inv.Preceding = []*org.DocumentRef{
