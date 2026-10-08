@@ -3,7 +3,7 @@ package verifactu
 import (
 	"fmt"
 
-	"github.com/invopop/gobl/addons/es/verifactu"
+	"github.com/invopop/gobl.es.verifactu/addon"
 	"github.com/invopop/gobl/bill"
 	"github.com/invopop/gobl/cbc"
 	"github.com/invopop/gobl/regimes/es"
@@ -61,17 +61,17 @@ func buildDetalleDesglose(c *tax.CategoryTotal, r *tax.RateTotal) (*DetalleDesgl
 	}
 
 	if c.Code == tax.CategoryVAT || c.Code == es.TaxCategoryIGIC {
-		detalle.ClaveRegimen = r.Ext.Get(verifactu.ExtKeyRegime).String()
+		detalle.ClaveRegimen = r.Ext.Get(addon.ExtKeyRegime).String()
 	}
 
 	if r.Ext.IsZero() {
 		return nil, ErrValidation.WithMessage(fmt.Sprintf("missing tax extensions for rate %s", r.Key))
 	}
 
-	if r.Percent == nil && r.Ext.Has(verifactu.ExtKeyExempt) {
-		detalle.OperacionExenta = r.Ext.Get(verifactu.ExtKeyExempt).String()
-	} else if r.Ext.Has(verifactu.ExtKeyOpClass) {
-		detalle.CalificacionOperacion = r.Ext.Get(verifactu.ExtKeyOpClass).String()
+	if r.Percent == nil && r.Ext.Has(addon.ExtKeyExempt) {
+		detalle.OperacionExenta = r.Ext.Get(addon.ExtKeyExempt).String()
+	} else if r.Ext.Has(addon.ExtKeyOpClass) {
+		detalle.CalificacionOperacion = r.Ext.Get(addon.ExtKeyOpClass).String()
 		switch detalle.CalificacionOperacion {
 		case "S1", "S2":
 			// S1 represents taxed operations; S2 represents reverse-charge operations.

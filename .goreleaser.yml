@@ -1,3 +1,5 @@
+version: 2
+
 before:
   hooks:
     - go mod download
@@ -14,16 +16,17 @@ builds:
 
 archives:
   - id: gobl.verifactu
-    builds:
+    ids:
       - gobl.verifactu
-    format: tar.gz
+    formats:
+      - tar.gz
     name_template: "gobl.verifactu_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     wrap_in_directory: true
 
 checksum:
   name_template: "checksums.txt"
 snapshot:
-  name_template: "{{ .Tag }}"
+  version_template: "{{ .Tag }}"
 changelog:
   sort: asc
   filters:
@@ -33,5 +36,5 @@ changelog:
 release:
   github:
     owner: invopop
-    name: gobl.verifactu
+    name: gobl.es.verifactu
   prerelease: auto

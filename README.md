@@ -4,7 +4,74 @@ Go library to convert [GOBL](https://github.com/invopop/gobl) invoices into Veri
 
 Released under the Apache 2.0 [LICENSE](https://github.com/invopop/gobl/blob/main/LICENSE), Copyright 2021-2025 [Invopop S.L.](https://invopop.com).
 
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/invopop/gobl.verifactu)
+[![Lint](https://github.com/invopop/gobl.es.verifactu/actions/workflows/lint.yaml/badge.svg)](https://github.com/invopop/gobl.es.verifactu/actions/workflows/lint.yaml)
+[![Test Go](https://github.com/invopop/gobl.es.verifactu/actions/workflows/test.yaml/badge.svg)](https://github.com/invopop/gobl.es.verifactu/actions/workflows/test.yaml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/invopop/gobl.es.verifactu)](https://goreportcard.com/report/github.com/invopop/gobl.es.verifactu)
+[![codecov](https://codecov.io/gh/invopop/gobl.es.verifactu/graph/badge.svg)](https://codecov.io/gh/invopop/gobl.es.verifactu)
+[![GoDoc](https://godoc.org/github.com/invopop/gobl.es.verifactu?status.svg)](https://godoc.org/github.com/invopop/gobl.es.verifactu)
+![Latest Tag](https://img.shields.io/github/v/tag/invopop/gobl.es.verifactu)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/invopop/gobl.es.verifactu)
+
+## Addon
+
+This module provides the `es-verifactu-v1` GOBL addon, in [`addon/`](./addon). It
+defines the extensions, normalizers, scenarios and validation rules that adapt a
+GOBL document to VeriFactu, for both the VERI*FACTU and NO VERI*FACTU modalities.
+
+The addon lived in GOBL core until it moved here, alongside the converter that is
+its main consumer. It registers itself on import, so a consumer that processes
+documents declaring `es-verifactu-v1` needs a blank import:
+
+```go
+import _ "github.com/invopop/gobl.es.verifactu/addon"
+```
+
+This is required, not optional: GOBL refuses to `Calculate` or `Validate` a
+document whose `$addons` names an addon that is not loaded, so that a document is
+never processed without the rules its `$addons` promise.
+
+### NO VERI*FACTU events
+
+Event registrations are built from a `bill.Status` document. Core GOBL status line
+keys describe the situation of a business document, so a NO VERI*FACTU event uses
+the `other` key and carries its event type in the `es-verifactu-event-type`
+extension, holding a code from the L2E list:
+
+```yaml
+lines:
+  - key: "other"
+    ext:
+      es-verifactu-event-type: "01" # invoicing system startup
+```
+
+Until this changed, each event type had its own status line key
+(`system-startup`, `invoice-anomaly`, and so on). Those keys are migrated onto
+the extension automatically during `Calculate`, so previously issued documents
+keep working. The one exception is the legacy `other` key, which meant code
+`90`: it cannot be told apart from the `other` key every line now carries, so it
+is reported rather than guessed at, and must set the extension explicitly.
+
+### Fault codes
+
+All rules report under a single `GOBL-ES-VERIFACTU` namespace, with the set
+component saying which rules rejected the document:
+
+| Example | Rules |
+| --- | --- |
+| `GOBL-ES-VERIFACTU-BILL-INVOICE-02` | Invoices |
+| `GOBL-ES-VERIFACTU-BILL-STATUS-01` | Status events |
+| `GOBL-ES-VERIFACTU-INVOICEANOMALY-01` | Event complements |
+
+Invoice processing is identical under VERI*FACTU and NO VERI*FACTU, so there is
+no namespace per modality: it would imply a split the invoice rules do not have.
+Status documents are the only modality-specific surface, and `BILL-STATUS`
+already identifies them.
+
+The status and complement rules previously reported under a bare `NOVERIFACTU`
+namespace, from a rule set held outside the addon that only this library
+invoked. The set and assertion parts are unchanged, so
+`NOVERIFACTU-BILL-STATUS-01` is now `GOBL-ES-VERIFACTU-BILL-STATUS-01`.
+Anything matching on the old codes needs updating.
 
 ## Source
 
@@ -34,7 +101,7 @@ import (
 	"os"
 
 	"github.com/invopop/gobl"
-	verifactu "github.com/invopop/gobl.verifactu"
+	verifactu "github.com/invopop/gobl.es.verifactu"
 	"github.com/invopop/xmldsig"
 )
 
@@ -124,7 +191,7 @@ func main() {
 The GOBL VeriFactu package tool also includes a command line helper. You can install manually in your Go environment with:
 
 ```bash
-go install github.com/invopop/gobl.verifactu
+go install github.com/invopop/gobl.es.verifactu/cmd/gobl.verifactu@latest
 ```
 
 We recommend using a `.env` file to prepare configuration settings, although all parameters can be set using command line flags. Heres an example:

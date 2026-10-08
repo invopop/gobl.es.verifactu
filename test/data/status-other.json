@@ -4,7 +4,7 @@
 		"uuid": "b8362574-3338-11f1-8ec8-fab5e3d05da9",
 		"dig": {
 			"alg": "sha256",
-			"val": "1c2e28b215e7adf373c1afc5ba1c084f9394049d3c4a098cfefa0e35dff0fd70"
+			"val": "448fb70008043408820e93c5fe48982a334d7e5ac60ae1982da643b9ef57bdae"
 		}
 	},
 	"doc": {
@@ -27,7 +27,10 @@
 		"lines": [
 			{
 				"index": 1,
-				"key": "other"
+				"key": "other",
+				"ext": {
+					"es-verifactu-event-type": "90"
+				}
 			}
 		],
 		"notes": [

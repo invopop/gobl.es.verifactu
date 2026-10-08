@@ -4,7 +4,7 @@
 		"uuid": "b83624ca-3338-11f1-8ec8-fab5e3d05da9",
 		"dig": {
 			"alg": "sha256",
-			"val": "4d81ef1964a480763c26241831df0be2781ed392a1c983b6d7c52650578e5505"
+			"val": "4c4993f76a6945cb2768b7c07e1398757a2ca6a3e19f8609a8e67b52142ff752"
 		}
 	},
 	"doc": {
@@ -27,7 +27,10 @@
 		"lines": [
 			{
 				"index": 1,
-				"key": "system-shutdown"
+				"key": "other",
+				"ext": {
+					"es-verifactu-event-type": "02"
+				}
 			}
 		]
 	}

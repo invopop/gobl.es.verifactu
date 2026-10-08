@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/invopop/gobl/addons/es/verifactu"
+	"github.com/invopop/gobl.es.verifactu/addon"
 	"github.com/invopop/gobl/bill"
 	"github.com/invopop/gobl/cbc"
 	"github.com/invopop/gobl/currency"
@@ -136,7 +136,7 @@ type DetalleDesglose struct {
 
 // newInvoiceRegistration creates a new VeriFactu registration for an invoice.
 func newInvoiceRegistration(inv *bill.Invoice, ts time.Time, s *Software) (*InvoiceRegistration, error) {
-	tf, err := getTaxExtKey(inv, verifactu.ExtKeyDocType)
+	tf, err := getTaxExtKey(inv, addon.ExtKeyDocType)
 	if err != nil {
 		return nil, err
 	}
@@ -169,8 +169,8 @@ func newInvoiceRegistration(inv *bill.Invoice, ts time.Time, s *Software) (*Invo
 		SistemaInformatico:             s,
 		FechaHoraHusoGenRegistro:       formatDateTimeZone(ts),
 		TipoHuella:                     FingerprintType,
-		FacturaSimplificadaArt7273:     itax.Ext.Get(verifactu.ExtKeySimplifiedArt7273).String(),
-		EmitidaPorTerceroODestinatario: itax.Ext.Get(verifactu.ExtKeyIssuerType).String(),
+		FacturaSimplificadaArt7273:     itax.Ext.Get(addon.ExtKeySimplifiedArt7273).String(),
+		EmitidaPorTerceroODestinatario: itax.Ext.Get(addon.ExtKeyIssuerType).String(),
 	}
 
 	if inv.OperationDate != nil {
@@ -197,7 +197,7 @@ func newInvoiceRegistration(inv *bill.Invoice, ts time.Time, s *Software) (*Invo
 		}
 	}
 
-	if itax.Ext.Get(verifactu.ExtKeyDocType).In("F2", "R5") {
+	if itax.Ext.Get(addon.ExtKeyDocType).In("F2", "R5") {
 		// The FacturaSinIdentifDestinatarioArt61d field can only be set
 		// if the Document Type is either F2 or R5. Simplified invoices
 		// over a value of 3000€ must have a customer identified.
@@ -208,8 +208,8 @@ func newInvoiceRegistration(inv *bill.Invoice, ts time.Time, s *Software) (*Invo
 		}
 	}
 
-	if inv.Tax.Ext.Get(verifactu.ExtKeyDocType).In(correctiveCodes...) {
-		k, err := getTaxExtKey(inv, verifactu.ExtKeyCorrectionType)
+	if inv.Tax.Ext.Get(addon.ExtKeyDocType).In(correctiveCodes...) {
+		k, err := getTaxExtKey(inv, addon.ExtKeyCorrectionType)
 		if err != nil {
 			return nil, err
 		}
@@ -408,7 +408,7 @@ func hasPartialBreakdownRegime(inv *bill.Invoice) bool {
 			continue
 		}
 		for _, r := range c.Rates {
-			regime := r.Ext.Get(verifactu.ExtKeyRegime).String()
+			regime := r.Ext.Get(addon.ExtKeyRegime).String()
 			for _, sr := range partialBreakdownRegimes {
 				if regime == sr {
 					return true

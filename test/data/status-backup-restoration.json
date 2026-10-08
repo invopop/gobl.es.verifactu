@@ -4,7 +4,7 @@
 		"uuid": "b8362538-3338-11f1-8ec8-fab5e3d05da9",
 		"dig": {
 			"alg": "sha256",
-			"val": "34708eea2e22862caf2db7ea3925c1f3c0fe236e87a135bf896f7fba9d643bd1"
+			"val": "10fe6fdd8a5d4d6a0510cf14dbefc49bd98490d3d4d472b024d441982cbebf87"
 		}
 	},
 	"doc": {
@@ -27,7 +27,10 @@
 		"lines": [
 			{
 				"index": 1,
-				"key": "backup-restoration"
+				"key": "other",
+				"ext": {
+					"es-verifactu-event-type": "07"
+				}
 			}
 		],
 		"notes": [

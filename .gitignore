@@ -27,3 +27,14 @@ go.work.sum
 *.txt
 
 /gobl.verifactu
+
+# Certificates and private keys. Real certificates are used for testing
+# against the AEAT, and must never be committed. The generated test.p12
+# fixture is the one exception.
+*.p12
+*.pfx
+*.pem
+*.crt
+*.cer
+*.key
+!test/certs/test.p12

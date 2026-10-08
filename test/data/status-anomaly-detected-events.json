@@ -4,7 +4,7 @@
 		"uuid": "b8362524-3338-11f1-8ec8-fab5e3d05da9",
 		"dig": {
 			"alg": "sha256",
-			"val": "7e5c65fe3e4de646292b953eefd6ec3df1bb99ca1cb66863eaaf448e2ca0564e"
+			"val": "28d9307ecf5d8a7471d61d71e7eb6236a68fbbae4e89f215324a86c25c882d66"
 		}
 	},
 	"doc": {
@@ -27,8 +27,11 @@
 		"lines": [
 			{
 				"index": 1,
-				"key": "event-anomaly",
+				"key": "other",
 				"description": "Chain traceability issue detected",
+				"ext": {
+					"es-verifactu-event-type": "06"
+				},
 				"complements": [
 					{
 						"$schema": "https://verifactu.gobl.org/v0/event-anomaly",

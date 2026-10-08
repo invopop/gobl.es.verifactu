@@ -1,7 +1,7 @@
 package verifactu
 
 import (
-	"github.com/invopop/gobl/addons/es/verifactu"
+	"github.com/invopop/gobl.es.verifactu/addon"
 	"github.com/invopop/gobl/cal"
 	"github.com/invopop/gobl/cbc"
 	"github.com/invopop/gobl/l10n"
@@ -49,7 +49,7 @@ func otherIdentity(p *org.Party, date cal.Date) *IDOtro {
 	}
 
 	for _, id := range p.Identities {
-		code := id.Ext.Get(verifactu.ExtKeyIdentityType)
+		code := id.Ext.Get(addon.ExtKeyIdentityType)
 
 		// Fallback to matching the key, this should no longer be needed
 		if code.IsEmpty() {

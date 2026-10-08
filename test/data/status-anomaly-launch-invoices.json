@@ -4,7 +4,7 @@
 		"uuid": "b83624e8-3338-11f1-8ec8-fab5e3d05da9",
 		"dig": {
 			"alg": "sha256",
-			"val": "5be94a85b2185ab4d7f5d172be74d0146569ed6ca7d85399b914a8005792f2a7"
+			"val": "e4acde60bdfed55bed993b3995fd190c2cad5e783949d1bb676be4327ddac082"
 		}
 	},
 	"doc": {
@@ -27,7 +27,10 @@
 		"lines": [
 			{
 				"index": 1,
-				"key": "invoice-anomaly-launch",
+				"key": "other",
+				"ext": {
+					"es-verifactu-event-type": "03"
+				},
 				"complements": [
 					{
 						"$schema": "https://verifactu.gobl.org/v0/invoice-anomaly-launch",

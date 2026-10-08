@@ -4,7 +4,7 @@ import (
 	"encoding/xml"
 	"testing"
 
-	verifactu "github.com/invopop/gobl.verifactu"
+	verifactu "github.com/invopop/gobl.es.verifactu"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
