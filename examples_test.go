@@ -13,7 +13,7 @@ import (
 
 	"github.com/invopop/gobl/bill"
 	"github.com/invopop/xmldsig"
-	"github.com/lestrrat-go/libxml2/xsd"
+	"github.com/lestrrat-go/helium/xsd"
 	"github.com/stretchr/testify/require"
 )
 

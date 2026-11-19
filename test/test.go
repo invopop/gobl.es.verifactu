@@ -3,7 +3,9 @@ package test
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
+	"errors"
 	"flag"
 	"os"
 	"path"
@@ -12,8 +14,8 @@ import (
 
 	"github.com/invopop/gobl"
 	"github.com/invopop/gobl/bill"
-	"github.com/lestrrat-go/libxml2"
-	"github.com/lestrrat-go/libxml2/xsd"
+	"github.com/lestrrat-go/helium"
+	"github.com/lestrrat-go/helium/xsd"
 )
 
 // UpdateOut is a flag that can be set to update example files
@@ -125,20 +127,33 @@ func isRootFolder(dir string) bool {
 
 // LoadSchema loads an XSD schema from the test/schema directory
 func LoadSchema(name string) (*xsd.Schema, error) {
+	ctx := context.Background()
 	schemaPath := filepath.Join(RootPath(), "test", "schema", name)
-	return xsd.ParseFromFile(schemaPath)
+	collector := helium.NewErrorCollector(ctx, helium.ErrorLevelNone)
+	schema, err := xsd.NewCompiler().
+		FS(helium.PermissiveFS()).
+		ErrorHandler(collector).
+		CompileFile(ctx, schemaPath)
+	if err != nil {
+		return nil, errors.Join(append(collector.Errors(), err)...)
+	}
+	return schema, nil
 }
 
 // ValidateXML validates an XML document against an XSD schema
 func ValidateXML(schema *xsd.Schema, doc []byte) []error {
-	xmlDoc, err := libxml2.Parse(doc)
+	ctx := context.Background()
+	xmlDoc, err := helium.NewParser().Parse(ctx, doc)
 	if err != nil {
 		return []error{err}
 	}
-	defer xmlDoc.Free()
 
-	if err := schema.Validate(xmlDoc); err != nil {
-		return err.(xsd.SchemaValidationError).Errors()
+	collector := helium.NewErrorCollector(ctx, helium.ErrorLevelNone)
+	if err := xsd.NewValidator(schema).ErrorHandler(collector).Validate(ctx, xmlDoc); err != nil {
+		if errs := collector.Errors(); len(errs) > 0 {
+			return errs
+		}
+		return []error{err}
 	}
 	return nil
 }
