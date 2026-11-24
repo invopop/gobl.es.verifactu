@@ -104,7 +104,7 @@ func (c *sendOpts) runE(cmd *cobra.Command, args []string) error {
 	fmt.Printf("Document sent: \n%s\n", string(data))
 
 	// Response
-	rd, err := res.Bytes()
+	rd, err := res.BytesIndent()
 	if err != nil {
 		return fmt.Errorf("failed to marshal response: %w", err)
 	}

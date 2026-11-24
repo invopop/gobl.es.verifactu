@@ -396,6 +396,11 @@ func (r *InvoiceRegistration) ChainData() *ChainData {
 // Bytes prepares an XML document suitable for persistence. Signed documents
 // use compact XML to preserve the enveloped signature.
 func (r *InvoiceRegistration) Bytes() ([]byte, error) {
+	return toBytes(r)
+}
+
+// BytesIndent returns the indented XML document bytes, which breaks the signature of a signed document.
+func (r *InvoiceRegistration) BytesIndent() ([]byte, error) {
 	return toBytesIndent(r)
 }
 
