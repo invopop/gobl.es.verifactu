@@ -413,6 +413,11 @@ func (e *Event) fingerprint(prev *EventChainData) {
 		h = prev.Fingerprint
 	}
 
+	e.Fingerprint = e.fingerprintFrom(h)
+}
+
+// fingerprintFrom computes the event's fingerprint from its fields and the previous event's fingerprint.
+func (e *Event) fingerprintFrom(previous string) string {
 	var softwareNIF, softwareIDOtro string
 	if e.Software != nil {
 		softwareNIF = e.Software.NIF
@@ -426,7 +431,7 @@ func (e *Event) fingerprint(prev *EventChainData) {
 		issuerNIF = e.Issuer.NIF
 	}
 
-	e.Fingerprint = computeFingerprint([]string{
+	return computeFingerprint([]string{
 		formatChainField("NIF", softwareNIF),
 		formatChainField("ID", softwareIDOtro),
 		formatChainField("IdSistemaInformatico", e.Software.SoftwareID),
@@ -434,9 +439,26 @@ func (e *Event) fingerprint(prev *EventChainData) {
 		formatChainField("NumeroInstalacion", e.Software.InstallationNumber),
 		formatChainField("NIF", issuerNIF),
 		formatChainField("TipoEvento", e.EventType),
-		formatChainField("HuellaEvento", h),
+		formatChainField("HuellaEvento", previous),
 		formatChainField("FechaHoraHusoGenEvento", e.GenerationTimestamp),
 	})
+}
+
+// record reads the event's chain details, recomputing its fingerprint.
+func (r *EventRegistration) record() (*Record, error) {
+	e := r.Event
+	if e == nil || e.Software == nil {
+		return nil, ErrIncompleteRecord
+	}
+	rec := &Record{
+		Fingerprint:         e.Fingerprint,
+		GenerationTimestamp: e.GenerationTimestamp,
+	}
+	if e.Chaining != nil && e.Chaining.PreviousEvent != nil {
+		rec.PreviousFingerprint = e.Chaining.PreviousEvent.Fingerprint
+	}
+	rec.ComputedFingerprint = e.fingerprintFrom(rec.PreviousFingerprint)
+	return rec, nil
 }
 
 // ChainData returns the chaining data from this event for use

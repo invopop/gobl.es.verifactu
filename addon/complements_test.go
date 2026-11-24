@@ -74,6 +74,18 @@ func TestInvoiceAnomalyValidation(t *testing.T) {
 		require.Nil(t, rules.Validate(c))
 	})
 
+	t.Run("every L1E anomaly type is valid", func(t *testing.T) {
+		for _, code := range addon.AnomalyTypeCodes() {
+			require.Nil(t, rules.Validate(&addon.InvoiceAnomaly{Type: code}), code)
+		}
+	})
+
+	t.Run("anomaly type not in the L1E list", func(t *testing.T) {
+		faults := rules.Validate(&addon.InvoiceAnomaly{Type: "99"})
+		require.NotNil(t, faults)
+		assert.Contains(t, faults.Error(), "anomaly type is not in the L1E list")
+	})
+
 	t.Run("invoice missing required fields", func(t *testing.T) {
 		c := &addon.InvoiceAnomaly{
 			Type:    "01",
@@ -110,6 +122,12 @@ func TestEventAnomalyValidation(t *testing.T) {
 		faults := rules.Validate(c)
 		require.NotNil(t, faults)
 		assert.Contains(t, faults.Error(), "anomaly type is required")
+	})
+
+	t.Run("anomaly type not in the L1E list", func(t *testing.T) {
+		faults := rules.Validate(&addon.EventAnomaly{Type: "16"})
+		require.NotNil(t, faults)
+		assert.Contains(t, faults.Error(), "anomaly type is not in the L1E list")
 	})
 
 	t.Run("event missing required fields", func(t *testing.T) {
@@ -195,4 +213,11 @@ func validInvoiceAnomalyLaunch() *addon.InvoiceAnomalyLaunch {
 		DateCheck:        true,
 		DateCount:        &count,
 	}
+}
+
+func TestTypeCodes(t *testing.T) {
+	assert.Len(t, addon.EventTypeCodes(), 11, "the L2E list")
+	assert.Contains(t, addon.EventTypeCodes(), addon.CodeEventSummary)
+	assert.Len(t, addon.AnomalyTypeCodes(), 16, "the L1E list")
+	assert.Equal(t, addon.CodeAnomalyOther, addon.AnomalyTypeCodes()[15])
 }

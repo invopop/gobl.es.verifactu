@@ -26,10 +26,10 @@ var codeToComplement = map[cbc.Code]any{
 	CodeOther:                nil,
 }
 
-// eventTypeCodes lists the codes accepted by the event type extension. Taken
+// EventTypeCodes lists the codes accepted by the event type extension. Taken
 // from the definition rather than the registry so that the rule set does not
 // depend on registration having already happened.
-func eventTypeCodes() []cbc.Code {
+func EventTypeCodes() []cbc.Code {
 	return cbc.DefinitionCodes(extEventType.Values)
 }
 
@@ -83,7 +83,7 @@ func statusRuleSet() *rules.Set {
 				rules.Field("ext",
 					rules.Assert("03", "a supported event type is required",
 						tax.ExtensionsRequire(ExtKeyEventType),
-						tax.ExtensionsHasCodes(ExtKeyEventType, eventTypeCodes()...),
+						tax.ExtensionsHasCodes(ExtKeyEventType, EventTypeCodes()...),
 					),
 				),
 				rules.When(requiresComplement,

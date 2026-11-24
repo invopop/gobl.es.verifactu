@@ -371,16 +371,37 @@ func (r *InvoiceRegistration) fingerprint(prev *ChainData) {
 		h = prev.Fingerprint
 	}
 
-	r.Huella = computeFingerprint([]string{
+	r.Huella = r.fingerprintFrom(h)
+}
+
+// fingerprintFrom computes the registration's fingerprint from its fields and the previous record's fingerprint.
+func (r *InvoiceRegistration) fingerprintFrom(previous string) string {
+	return computeFingerprint([]string{
 		formatChainField("IDEmisorFactura", r.IDFactura.IDEmisorFactura),
 		formatChainField("NumSerieFactura", r.IDFactura.NumSerieFactura),
 		formatChainField("FechaExpedicionFactura", r.IDFactura.FechaExpedicionFactura),
 		formatChainField("TipoFactura", r.TipoFactura),
 		formatChainField("CuotaTotal", r.CuotaTotal.String()),
 		formatChainField("ImporteTotal", r.ImporteTotal.String()),
-		formatChainField("Huella", h),
+		formatChainField("Huella", previous),
 		formatChainField("FechaHoraHusoGenRegistro", r.FechaHoraHusoGenRegistro),
 	})
+}
+
+// record reads the registration's chain details, recomputing its fingerprint.
+func (r *InvoiceRegistration) record() (*Record, error) {
+	if r.IDFactura == nil {
+		return nil, ErrIncompleteRecord
+	}
+	rec := &Record{
+		Fingerprint:         r.Huella,
+		GenerationTimestamp: r.FechaHoraHusoGenRegistro,
+	}
+	if r.Encadenamiento != nil && r.Encadenamiento.RegistroAnterior != nil {
+		rec.PreviousFingerprint = r.Encadenamiento.RegistroAnterior.Huella
+	}
+	rec.ComputedFingerprint = r.fingerprintFrom(rec.PreviousFingerprint)
+	return rec, nil
 }
 
 // ChainData provides the details for this registration entry.
