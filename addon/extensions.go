@@ -50,6 +50,48 @@ const (
 	CodeOther                cbc.Code = "90" // Other
 )
 
+// Anomaly Type Codes from the L1E list, used as the `TipoAnomalia` of an anomaly detection.
+const (
+	CodeAnomalyFingerprint           cbc.Code = "01" // Integrity: fingerprint
+	CodeAnomalySignature             cbc.Code = "02" // Integrity: signature
+	CodeAnomalyIntegrityOther        cbc.Code = "03" // Integrity: other
+	CodeAnomalyPreviousMissing       cbc.Code = "04" // Record chain: not the first record, but the previous one is missing
+	CodeAnomalyNextMissing           cbc.Code = "05" // Record chain: not the last record, but the next one is missing
+	CodeAnomalyRecordChainOther      cbc.Code = "06" // Record chain: other
+	CodeAnomalyNextFingerprint       cbc.Code = "07" // Fingerprint chain: the fingerprint differs from the previous fingerprint stored in the next record
+	CodeAnomalyPreviousFingerprint   cbc.Code = "08" // Fingerprint chain: the previous fingerprint differs from the previous record's fingerprint
+	CodeAnomalyFingerprintChainOther cbc.Code = "09" // Fingerprint chain: other
+	CodeAnomalyChainOther            cbc.Code = "10" // Chain: other
+	CodeAnomalyEarlier               cbc.Code = "11" // Dates: generated before the previous record
+	CodeAnomalyLater                 cbc.Code = "12" // Dates: generated after the next record
+	CodeAnomalyFuture                cbc.Code = "13" // Dates: generated after the current system time
+	CodeAnomalyDatesOther            cbc.Code = "14" // Dates: other
+	CodeAnomalyTraceabilityOther     cbc.Code = "15" // Traceability: other
+	CodeAnomalyOther                 cbc.Code = "90" // Other
+)
+
+// AnomalyTypeCodes lists the L1E anomaly type codes.
+func AnomalyTypeCodes() []cbc.Code {
+	return []cbc.Code{
+		CodeAnomalyFingerprint,
+		CodeAnomalySignature,
+		CodeAnomalyIntegrityOther,
+		CodeAnomalyPreviousMissing,
+		CodeAnomalyNextMissing,
+		CodeAnomalyRecordChainOther,
+		CodeAnomalyNextFingerprint,
+		CodeAnomalyPreviousFingerprint,
+		CodeAnomalyFingerprintChainOther,
+		CodeAnomalyChainOther,
+		CodeAnomalyEarlier,
+		CodeAnomalyLater,
+		CodeAnomalyFuture,
+		CodeAnomalyDatesOther,
+		CodeAnomalyTraceabilityOther,
+		CodeAnomalyOther,
+	}
+}
+
 var extensions = []*cbc.Definition{
 	{
 		Key: ExtKeyDocType,

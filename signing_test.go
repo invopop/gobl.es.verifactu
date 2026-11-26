@@ -153,6 +153,7 @@ func TestRegisterInvoiceWithSigning(t *testing.T) {
 	data, err := reg.Bytes()
 	require.NoError(t, err)
 	assert.Contains(t, string(data), "<ds:Signature")
+	assert.NotContains(t, string(data), "\n  <", "written as signed, without indentation")
 }
 
 func TestRegisterInvoiceWithoutSigning(t *testing.T) {
@@ -184,6 +185,25 @@ func TestCancelInvoiceWithSigning(t *testing.T) {
 	data, err := can.Bytes()
 	require.NoError(t, err)
 	assert.Contains(t, string(data), "<ds:Signature")
+	assert.NotContains(t, string(data), "\n  <", "written as signed, without indentation")
+}
+
+func TestRegisterEventWithSigning(t *testing.T) {
+	c := testSigningClient(t)
+	env := test.LoadEnvelope("status-system-startup.json")
+
+	reg, err := c.RegisterEvent(env, nil)
+	require.NoError(t, err)
+	require.NotNil(t, reg.Event.Signature)
+
+	data, err := reg.Bytes()
+	require.NoError(t, err)
+	assert.Contains(t, string(data), "<ds:Signature")
+	assert.NotContains(t, string(data), "\n  <", "written as signed, without indentation")
+
+	data, err = reg.BytesIndent()
+	require.NoError(t, err)
+	assert.Contains(t, string(data), "\n  <")
 }
 
 func TestRegisterInvoiceNoVerifactuImpliesSigning(t *testing.T) {

@@ -29,6 +29,8 @@ var (
 	ErrAlreadyProcessed = ErrValidation.WithMessage("already processed")
 	ErrOnlyInvoices     = ErrValidation.WithMessage("only invoices are supported")
 	ErrOnlyStatuses     = ErrValidation.WithMessage("only bill status documents are supported")
+	ErrOnlyRecords      = ErrValidation.WithMessage("only invoice registration, invoice cancellation and event records are supported")
+	ErrIncompleteRecord = ErrValidation.WithMessage("record is missing the details its fingerprint is computed from")
 )
 
 // Error allows for structured responses from the gateway to be able to

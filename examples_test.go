@@ -66,7 +66,7 @@ func TestXMLGeneration(t *testing.T) {
 				}
 				reg, err2 := c.RegisterEvent(env, prev)
 				require.NoError(t, err2)
-				data, err = reg.Bytes()
+				data, err = reg.BytesIndent()
 			default:
 				t.Fatalf("unsupported document type in %s", example)
 			}

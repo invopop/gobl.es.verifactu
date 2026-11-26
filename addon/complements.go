@@ -245,6 +245,7 @@ func invoiceAnomalyRuleSet() *rules.Set {
 	return rules.For(new(InvoiceAnomaly),
 		rules.Field("type",
 			rules.Assert("01", "anomaly type is required", is.Present),
+			rules.Assert("04", "anomaly type is not in the L1E list", is.In(anomalyTypes()...)),
 		),
 		rules.Field("invoice",
 			rules.Field("issuer_tax_code",
@@ -298,6 +299,7 @@ func eventAnomalyRuleSet() *rules.Set {
 	return rules.For(new(EventAnomaly),
 		rules.Field("type",
 			rules.Assert("01", "anomaly type is required", is.Present),
+			rules.Assert("05", "anomaly type is not in the L1E list", is.In(anomalyTypes()...)),
 		),
 		rules.Field("event",
 			rules.Field("type",
@@ -364,4 +366,14 @@ func eventSummaryRuleSet() *rules.Set {
 			),
 		),
 	)
+}
+
+// anomalyTypes lists the L1E anomaly type codes for rule assertions.
+func anomalyTypes() []any {
+	codes := AnomalyTypeCodes()
+	out := make([]any, len(codes))
+	for i, c := range codes {
+		out[i] = c
+	}
+	return out
 }

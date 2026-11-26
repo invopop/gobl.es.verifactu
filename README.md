@@ -186,6 +186,10 @@ func main() {
 }
 ```
 
+### Checking records
+
+`verifactu.ParseRecord(data)` reads back a stored invoice registration, cancellation or event record and recomputes its fingerprint, which differs from the one in the record when a field it covers was altered. It does not check the signature.
+
 ### Command Line
 
 The GOBL VeriFactu package tool also includes a command line helper. You can install manually in your Go environment with:

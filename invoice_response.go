@@ -104,7 +104,12 @@ func (r *InvoiceResponseLine) Message() string {
 	return r.Status
 }
 
-// Bytes prepares an indendented XML document suitable for persistence.
+// Bytes returns the XML document bytes.
 func (ir *InvoiceResponse) Bytes() ([]byte, error) {
+	return toBytes(ir)
+}
+
+// BytesIndent returns the indented XML document bytes.
+func (ir *InvoiceResponse) BytesIndent() ([]byte, error) {
 	return toBytesIndent(ir)
 }

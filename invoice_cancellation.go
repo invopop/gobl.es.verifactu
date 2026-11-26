@@ -71,13 +71,34 @@ func (c *InvoiceCancellation) fingerprint(prev *ChainData) {
 		h = prev.Fingerprint
 	}
 
-	c.Huella = computeFingerprint([]string{
+	c.Huella = c.fingerprintFrom(h)
+}
+
+// fingerprintFrom computes the cancellation's fingerprint from its fields and the previous record's fingerprint.
+func (c *InvoiceCancellation) fingerprintFrom(previous string) string {
+	return computeFingerprint([]string{
 		formatChainField("IDEmisorFacturaAnulada", c.IDFactura.IDEmisorFactura),
 		formatChainField("NumSerieFacturaAnulada", c.IDFactura.NumSerieFactura),
 		formatChainField("FechaExpedicionFacturaAnulada", c.IDFactura.FechaExpedicionFactura),
-		formatChainField("Huella", h),
+		formatChainField("Huella", previous),
 		formatChainField("FechaHoraHusoGenRegistro", c.FechaHoraHusoGenRegistro),
 	})
+}
+
+// record reads the cancellation's chain details, recomputing its fingerprint.
+func (c *InvoiceCancellation) record() (*Record, error) {
+	if c.IDFactura == nil {
+		return nil, ErrIncompleteRecord
+	}
+	rec := &Record{
+		Fingerprint:         c.Huella,
+		GenerationTimestamp: c.FechaHoraHusoGenRegistro,
+	}
+	if c.Encadenamiento != nil && c.Encadenamiento.RegistroAnterior != nil {
+		rec.PreviousFingerprint = c.Encadenamiento.RegistroAnterior.Huella
+	}
+	rec.ComputedFingerprint = c.fingerprintFrom(rec.PreviousFingerprint)
+	return rec, nil
 }
 
 // ChainData provides the details for this cancellation entry.
@@ -93,5 +114,10 @@ func (c *InvoiceCancellation) ChainData() *ChainData {
 // Bytes prepares an XML document suitable for persistence. Signed documents
 // use compact XML to preserve the enveloped signature.
 func (c *InvoiceCancellation) Bytes() ([]byte, error) {
+	return toBytes(c)
+}
+
+// BytesIndent returns the indented XML document bytes, which breaks the signature of a signed document.
+func (c *InvoiceCancellation) BytesIndent() ([]byte, error) {
 	return toBytesIndent(c)
 }
